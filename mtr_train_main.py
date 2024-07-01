@@ -78,20 +78,22 @@ def special_interchange_match(station_id_to_code, first, second):
 def special_path_match(station_id_to_code, first, second):
     if first is None or second is None:
         return None
-    collection = {station_id_to_code[int(first)], station_id_to_code[int(second)]}
+    first_code = station_id_to_code[int(first)]
+    second_code = station_id_to_code[int(second)]
+    collection = {first_code, second_code}
     if "CEN" in collection and "HOK" in collection:
         return {
             "path": [
-                {"id": first, "line": "walk_paid"},
-                {"id": second, "line": None}
+                {"id": first_code, "line": "walk_paid"},
+                {"id": second_code, "line": None}
             ],
             "time": ""
         }
     if "TST" in collection and "ETS" in collection:
         return {
             "path": [
-                {"id": first, "line": "walk_unpaid"},
-                {"id": second, "line": None}
+                {"id": first_code, "line": "walk_unpaid"},
+                {"id": second_code, "line": None}
             ],
             "time": ""
         }
