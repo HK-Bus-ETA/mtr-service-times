@@ -7,7 +7,7 @@ import zlib
 import chardet
 
 
-REQUEST_COOLDOWN = 1.5
+REQUEST_COOLDOWN = 1
 
 
 def url_open(url, read_function):
@@ -108,7 +108,7 @@ def download_and_process_mtr_train_data(service_type):
         data_key = "mtrData"
         all_mtr_stations = get_web_text("https://opendata.mtr.com.hk/data/mtr_lines_and_stations.csv").splitlines()[1:]
         station_id_to_code = {70: "RAC"}
-        data["RAC"] = {"first_trains": {}, "last_trains": {}, "opening": "", "closing": ""}
+        data["RAC"] = {"first_trains": {}, "last_trains": {}}
         for line in all_mtr_stations:
             try:
                 row = line.split(",")
@@ -117,9 +117,7 @@ def download_and_process_mtr_train_data(service_type):
                 station_id_to_code[station_id] = station_code
                 data[station_code] = {
                     "first_trains": {},
-                    "last_trains": {},
-                    "opening": "",
-                    "closing": ""
+                    "last_trains": {}
                 }
             except ValueError:
                 pass
@@ -129,8 +127,7 @@ def download_and_process_mtr_train_data(service_type):
                     continue
                 time.sleep(REQUEST_COOLDOWN)
                 print(f'{orig_station_code} ({orig_station_id}) -> {dest_station_code} ({dest_station_id})')
-                journey_data = get_web_json(
-                    f"https://www.mtr.com.hk/share/customer/jp/api/HRRoutes/?o={orig_station_id}&d={dest_station_id}&lang=E")
+                journey_data = get_web_json(f"https://www.mtr.com.hk/share/customer/jp/api/HRRoutes/?o={orig_station_id}&d={dest_station_id}&lang=E")
                 if "opening" not in data[orig_station_code]:
                     opening_hours_strs = journey_data["stationOpeningHours"].split("-")
                     if len(opening_hours_strs) == 2:
@@ -147,17 +144,22 @@ def download_and_process_mtr_train_data(service_type):
                     for i in range(len(journey_first_train_data["interchange"])):
                         interchange_station_id = none_or_int(list_get(journey_first_train_data["interchange"], i))
                         interchange_line = list_get(journey_first_train_data["links"], u)
-                        special_interchange = special_interchange_match(station_id_to_code, interchange_station_id,
-                                                                        list_get(
-                                                                            journey_first_train_data["interchange"],
-                                                                            i + 1))
+                        special_interchange = special_interchange_match(station_id_to_code, interchange_station_id, list_get(journey_first_train_data["interchange"], i + 1))
                         if special_interchange is None:
                             first_train_data["path"].append(
-                                {"id": station_id_to_code[interchange_station_id], "line": interchange_line})
+                                {
+                                    "id": station_id_to_code[interchange_station_id],
+                                    "line": interchange_line
+                                }
+                            )
                             u += 1
                         else:
                             first_train_data["path"].append(
-                                {"id": station_id_to_code[interchange_station_id], "line": special_interchange})
+                                {
+                                    "id": station_id_to_code[interchange_station_id],
+                                    "line": special_interchange
+                                }
+                            )
                     data[orig_station_code]["first_trains"][dest_station_code] = first_train_data
                 else:
                     special_path = special_path_match(station_id_to_code, orig_station_id, dest_station_id)
@@ -175,16 +177,22 @@ def download_and_process_mtr_train_data(service_type):
                     for i in range(len(journey_last_train_data["interchange"])):
                         interchange_station_id = none_or_int(list_get(journey_last_train_data["interchange"], i))
                         interchange_line = list_get(journey_last_train_data["links"], u)
-                        special_interchange = special_interchange_match(station_id_to_code, interchange_station_id,
-                                                                        list_get(journey_last_train_data["interchange"],
-                                                                                 i + 1))
+                        special_interchange = special_interchange_match(station_id_to_code, interchange_station_id, list_get(journey_last_train_data["interchange"], i + 1))
                         if special_interchange is None:
                             last_train_data["path"].append(
-                                {"id": station_id_to_code[interchange_station_id], "line": interchange_line})
+                                {
+                                    "id": station_id_to_code[interchange_station_id],
+                                    "line": interchange_line
+                                }
+                            )
                             u += 1
                         else:
                             last_train_data["path"].append(
-                                {"id": station_id_to_code[interchange_station_id], "line": special_interchange})
+                                {
+                                    "id": station_id_to_code[interchange_station_id],
+                                    "line": special_interchange
+                                }
+                            )
                     data[orig_station_code]["last_trains"][dest_station_code] = last_train_data
                 else:
                     special_path = special_path_match(station_id_to_code, orig_station_id, dest_station_id)
