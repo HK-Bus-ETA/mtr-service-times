@@ -87,7 +87,7 @@ def special_path_match(station_id_to_code, first, second):
                 {"id": first_code, "line": "walk_paid"},
                 {"id": second_code, "line": None}
             ],
-            "time": ""
+            "time": "00:00"
         }
     if "TST" in collection and "ETS" in collection:
         return {
@@ -95,7 +95,7 @@ def special_path_match(station_id_to_code, first, second):
                 {"id": first_code, "line": "walk_unpaid"},
                 {"id": second_code, "line": None}
             ],
-            "time": ""
+            "time": "00:00"
         }
     return None
 
