@@ -5,14 +5,14 @@ on:
   workflow_dispatch:
 
 jobs:
-  Fetch-Process-Data:
+  MTR-Fetch-Process-Data:
     runs-on: ubuntu-latest
 
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
         with:
-          ref: data-generation
+          ref: main
       - name: Setup Python environment
         uses: actions/setup-python@v2
         with:
