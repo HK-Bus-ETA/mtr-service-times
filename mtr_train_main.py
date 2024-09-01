@@ -7,7 +7,7 @@ import zlib
 import chardet
 
 
-REQUEST_COOLDOWN = 2
+REQUEST_COOLDOWN = 5
 
 
 def url_open(url, read_function):
