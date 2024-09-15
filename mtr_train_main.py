@@ -26,6 +26,7 @@ def url_open(url, read_function):
             retry_count += 1
             if retry_count > 5:
                 raise
+            time.sleep(REQUEST_COOLDOWN)
     return response
 
 
